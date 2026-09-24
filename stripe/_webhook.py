@@ -118,11 +118,13 @@ class WebhookSignature(object):
 
     @classmethod
     def generate_signature_header(
-        cls, payload: str, secret: str, timestamp=None
+        cls, payload: str, secret: str, timestamp: Optional[int] = None
     ):
         """Compute the `Stripe-Signature` header for a given webhook body & secret. Useful for signing payloads in unit tests."""
         if timestamp is None:
             timestamp = int(time.time())
+        else:
+            timestamp = int(timestamp)
         scheme = cls.EXPECTED_SCHEME
         signed_payload = f"{timestamp}.{payload}"
         signature = cls._compute_signature(signed_payload, secret)
