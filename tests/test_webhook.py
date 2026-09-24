@@ -226,6 +226,17 @@ class TestWebhookSignature(object):
             DUMMY_WEBHOOK_PAYLOAD, header, DUMMY_WEBHOOK_SECRET
         )
 
+    def test_float_timestamp_is_truncated(self):
+        # Passing time.time() (a float) must produce a valid, verifiable header
+        float_ts = 1700000000.9
+        header = WebhookSignature.generate_signature_header(
+            DUMMY_WEBHOOK_PAYLOAD, DUMMY_WEBHOOK_SECRET, float_ts
+        )
+        assert header.startswith("t=1700000000,")
+        assert WebhookSignature.verify_header(
+            DUMMY_WEBHOOK_PAYLOAD, header, DUMMY_WEBHOOK_SECRET
+        )
+
 
 class TestStripeClientConstructEvent(object):
     def test_construct_event(self, stripe_mock_stripe_client):
